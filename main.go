@@ -9,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -63,18 +62,10 @@ func run(addr string) error {
 }
 
 type handler struct {
-	sync.Mutex
 	hostname string
 }
 
 func (h *handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	h.Lock()
-	defer h.Unlock()
-
-	if err := r.Context().Err(); err != nil {
-		log.Print(err)
-		return
-	}
 	if err := r.ParseForm(); err != nil {
 		log.Print(err)
 		return
