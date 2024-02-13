@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -74,6 +75,18 @@ func (h *handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		log.Print(err)
 		return
 	}
+	if err := r.ParseForm(); err != nil {
+		log.Print(err)
+		return
+	}
+	freq, _ := strconv.ParseInt(r.Form.Get("f"), 10, 32)
+	if freq <= 0 {
+		freq = 99
+	}
+	sleep, _ := strconv.ParseInt(r.Form.Get("t"), 10, 32)
+	if sleep <= 0 {
+		sleep = 30
+	}
 
 	now := time.Now().UTC()
 	y, m, d := now.Date()
@@ -82,7 +95,7 @@ func (h *handler) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	hdr := rw.Header()
 	hdr.Set("Content-Type", "image/svg+xml")
 	hdr.Set("Content-Disposition", fmt.Sprintf(`inline; filename="%s.svg"`, title))
-	cmd := exec.Command("./recordflame.sh", title)
+	cmd := exec.Command("./recordflame.sh", title, strconv.Itoa(int(freq)), strconv.Itoa(int(sleep)))
 	cmd.Stdout = rw
 	cmd.Stderr = log.Writer()
 	if err := cmd.Run(); err != nil {
