@@ -20,4 +20,3 @@ Start the server by running `perfserve`. If you want to use a different HTTP lis
 The server depends on `perf` and Perl. Because it runs `perf` it probably needs to run as `root`.
 
 When `perfserve` starts up it will create a temporary directory, unpack its Perl scripts in there, and it will use that directory to store `perf record` data.
-
