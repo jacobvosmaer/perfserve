@@ -12,7 +12,10 @@ import (
 	"time"
 )
 
-var listen = flag.String("l", "localhost:8080", "server listen address")
+var (
+	listen  = flag.String("l", "localhost:8080", "server listen address")
+	workdir = flag.String("d", "", "scratch directory, default is random tempdir")
+)
 
 //go:embed FlameGraph/stackcollapse-perf.pl
 var stackcollapse []byte
@@ -37,14 +40,17 @@ func main() {
 }
 
 func run(addr string) error {
-	dir, err := os.MkdirTemp("", "perfserve")
-	if err != nil {
-		return err
+	var err error
+	if *workdir == "" {
+		*workdir, err = os.MkdirTemp("", "perfserve")
+		if err != nil {
+			return err
+		}
+		if err := os.Chmod(*workdir, 0700); err != nil {
+			return err
+		}
 	}
-	if err := os.Chmod(dir, 0700); err != nil {
-		return err
-	}
-	if err := os.Chdir(dir); err != nil {
+	if err := os.Chdir(*workdir); err != nil {
 		return err
 	}
 
