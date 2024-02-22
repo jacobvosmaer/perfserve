@@ -3,9 +3,16 @@
 An all-in-one Go program to capture `perf record` FlameGraphs via a
 web browser. Meant to run as root on Linux.
 
-I'm sure there exist proper tools for this but I felt like building
-this myself.
+I wanted to be able to get flamegraphs from a Linux machine with minimal effort. With this program I get a single binary that I can quickly copy to a server and run in a `screen` session. 
 
+If you are in a hurry you can skip using `screen` and do:
+
+```
+rsync perfserve server.example.com:.
+ssh -L localhost:8080:localhost:8080 server.example.com sudo ./perfserve
+```
+
+Then visit `http://localhost:8080/?t=5` on your local machine to get a 5-second CPU profile.
 
 ## How to build
 
